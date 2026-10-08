@@ -165,7 +165,7 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
             javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
-    new MainFrm(util.AppSession.getCurrentUser()).setVisible(true); // sau này đổi thành HomeFrm
+    new ShopFrm(util.AppSession.getCurrentUser()).setVisible(true);
     this.dispose();
     }
 }

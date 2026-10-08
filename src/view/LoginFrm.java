@@ -192,9 +192,10 @@ public class LoginFrm extends javax.swing.JFrame implements ActionListener {
     }
     // Mở màn hình theo quyền (hiện tạm dùng MainFrm, các giai đoạn sau sẽ đổi)
     private void openByRole(model.User user) {
-    // Admin    -> AdminDashboardFrm  (giai đoạn 6)
-    // NhanVien -> AdminOrderFrm      (giai đoạn 6)
-    // User     -> HomeFrm            (giai đoạn 2)
-    new MainFrm(user).setVisible(true);
+    if (user.isAdmin() || user.isNhanVien()) {
+        new MainFrm(user).setVisible(true);   // Giai đoạn 6 sẽ đổi thành trang quản trị
+    } else {
+        new ShopFrm(user).setVisible(true);   // khách hàng
+    }
     } 
 }

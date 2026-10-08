@@ -1,25 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Lenovo
- */
 public class Product {
     private int     id;
     private String  name;
     private String  description;
-    private double price;
-    private int    stock;
-    private String imageUrl;
+    private double  price;
+    private int     stock;
+    private String  imageUrl;
     private boolean isAvailable;
-    private int    categoryId;
-    private String categoryName; // để hiển thị trên bảng
+    private boolean isFeatured;
+    private int     categoryId;
+    private String  categoryName;
 
-    // Constructor đầy đủ
     public Product(int id, String name, String desc,
                    double price, int stock, String img,
                    boolean avail, int catId, String catName) {
@@ -29,19 +21,23 @@ public class Product {
         this.categoryName = catName;
     }
 
-    // Getters & Setters
     public int getId() { return id; }
     public String getName() { return name; }
+    public String getDescription() { return description; }
     public double getPrice() { return price; }
     public int getStock() { return stock; }
+    public String getImageUrl() { return imageUrl; }
     public boolean isAvailable() { return isAvailable; }
+    public boolean isFeatured() { return isFeatured; }
     public int getCategoryId() { return categoryId; }
     public String getCategoryName() { return categoryName; }
-    public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
+
     public void setName(String n) { name = n; }
+    public void setDescription(String d) { description = d; }
     public void setPrice(double p) { price = p; }
     public void setStock(int s) { stock = s; }
+    public void setImageUrl(String u) { imageUrl = u; }
     public void setAvailable(boolean a) { isAvailable = a; }
+    public void setFeatured(boolean f) { isFeatured = f; }
     public void setCategoryId(int c) { categoryId = c; }
 }
