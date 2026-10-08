@@ -6,9 +6,9 @@ import javax.swing.*;
 import model.User;
 import util.Theme;
 
-// Cửa sổ chính của khách: thanh menu + các trang (Home / Danh sách / Chi tiết)
+// Cửa sổ chính của khách: thanh menu + các trang 
 public class ShopFrm extends JFrame {
-    private static final String HOME = "home", LIST = "list", DETAIL = "detail";
+    private static final String HOME = "home", LIST = "list", DETAIL = "detail", CART = "cart";
 
     private final CardLayout cards = new CardLayout();
     private final JPanel content = new JPanel(cards);
@@ -17,7 +17,8 @@ public class ShopFrm extends JFrame {
     private final ProductDetailPanel detailPanel;
     private String currentCard = HOME;
     private String previousCard = HOME;
-
+    private CartPanel cart;
+    
     public ShopFrm(User user) {
         super("FastFood");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -29,9 +30,11 @@ public class ShopFrm extends JFrame {
         homePanel = new HomePanel(this);
         listPanel = new ProductListPanel(this);
         detailPanel = new ProductDetailPanel(this);
+        cart = new CartPanel(this);
         content.add(homePanel, HOME);
         content.add(listPanel, LIST);
         content.add(detailPanel, DETAIL);
+        content.add(cart, CART);
 
         add(buildNavBar(user), BorderLayout.NORTH);
         add(content, BorderLayout.CENTER);
@@ -55,7 +58,7 @@ public class ShopFrm extends JFrame {
         JButton btnCart = Theme.navButton("Giỏ hàng");
         btnHome.addActionListener(e -> showHome());
         btnProducts.addActionListener(e -> showProducts(0, ""));
-        btnCart.addActionListener(e -> JOptionPane.showMessageDialog(this, "Giỏ hàng sẽ làm ở Giai đoạn 3."));
+        btnCart.addActionListener(e -> showCart());
         menu.add(btnHome);
         menu.add(btnProducts);
         menu.add(btnCart);
@@ -76,7 +79,6 @@ public class ShopFrm extends JFrame {
         return bar;
     }
 
-    // ===== Điều hướng giữa các trang =====
     private void show(String card) {
         previousCard = currentCard;
         currentCard = card;
@@ -107,5 +109,10 @@ public class ShopFrm extends JFrame {
         new AccountController().logout();
         new LoginFrm().setVisible(true);
         dispose();
+    }
+    
+    public void showCart() {
+    cart.reload();
+    show(CART);
     }
 }

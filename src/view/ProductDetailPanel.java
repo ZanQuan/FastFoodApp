@@ -86,12 +86,18 @@ public class ProductDetailPanel extends javax.swing.JPanel {
         relatedGrid.setProducts(related, shell::showProductDetail);
     }
 
-    private void addToCart() {
+        private void addToCart() {
         if (current == null) return;
-        int qty = (Integer) spnQty.getValue();
-        // Giai đoạn 3 sẽ thay bằng CartHelper
-        JOptionPane.showMessageDialog(this,
-            "Đã chọn " + qty + " x " + current.getName() + "\n(Giỏ hàng làm ở Giai đoạn 3)");
+        String err = new controller.CartController().add(current, (int) spnQty.getValue());
+        if (err != null) {
+            JOptionPane.showMessageDialog(this, err);
+            return;
+        }
+        int choice = JOptionPane.showOptionDialog(this,
+                "Đã thêm " + current.getName() + " vào giỏ hàng.",
+                "Giỏ hàng", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                null, new String[]{"Xem giỏ hàng", "Tiếp tục mua"}, "Tiếp tục mua");
+        if (choice == 0) shell.showCart();
     }
     /**
      * This method is called from within the constructor to initialize the form.
