@@ -10,8 +10,6 @@ import javax.swing.SwingWorker;
 
 public class ImageUtil {
 
-    // Tải ảnh ở luồng nền (không làm đơ giao diện). path có thể là http(s)://... hoặc đường dẫn file.
-    // Khi xong gọi callback với ImageIcon, hoặc null nếu không tải được.
     public static void load(String path, int w, int h, Consumer<ImageIcon> callback) {
         if (path == null || path.trim().isEmpty()) { callback.accept(null); return; }
         new SwingWorker<ImageIcon, Void>() {

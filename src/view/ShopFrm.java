@@ -8,7 +8,9 @@ import util.Theme;
 
 // Cửa sổ chính của khách: thanh menu + các trang 
 public class ShopFrm extends JFrame {
-    private static final String HOME = "home", LIST = "list", DETAIL = "detail", CART = "cart";
+
+    private static final String HOME = "home", LIST = "list", DETAIL = "detail", CART = "cart",
+            CHECKOUT = "checkout", ORDERS = "orders";
 
     private final CardLayout cards = new CardLayout();
     private final JPanel content = new JPanel(cards);
@@ -18,7 +20,9 @@ public class ShopFrm extends JFrame {
     private String currentCard = HOME;
     private String previousCard = HOME;
     private CartPanel cart;
-    
+    private CheckoutPanel checkout;
+    private OrdersPanel orders;
+
     public ShopFrm(User user) {
         super("FastFood");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -35,6 +39,10 @@ public class ShopFrm extends JFrame {
         content.add(listPanel, LIST);
         content.add(detailPanel, DETAIL);
         content.add(cart, CART);
+        checkout = new CheckoutPanel(this);
+        orders = new OrdersPanel(this);
+        content.add(checkout, CHECKOUT);
+        content.add(orders, ORDERS);
 
         add(buildNavBar(user), BorderLayout.NORTH);
         add(content, BorderLayout.CENTER);
@@ -56,12 +64,16 @@ public class ShopFrm extends JFrame {
         JButton btnHome = Theme.navButton("Trang chủ");
         JButton btnProducts = Theme.navButton("Sản phẩm");
         JButton btnCart = Theme.navButton("Giỏ hàng");
+        JButton btnOrders = Theme.navButton("Đơn hàng");
+        btnOrders.addActionListener(e -> showOrders());
+        menu.add(btnOrders);
         btnHome.addActionListener(e -> showHome());
         btnProducts.addActionListener(e -> showProducts(0, ""));
         btnCart.addActionListener(e -> showCart());
         menu.add(btnHome);
         menu.add(btnProducts);
         menu.add(btnCart);
+        menu.add(btnOrders);
         bar.add(menu, BorderLayout.CENTER);
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -97,7 +109,9 @@ public class ShopFrm extends JFrame {
 
     public void showProductDetail(model.Product p) {
         detailPanel.load(p.getId());
-        if (!DETAIL.equals(currentCard)) show(DETAIL);   // xem sp liên quan: vẫn giữ trang trước đó
+        if (!DETAIL.equals(currentCard)) {
+            show(DETAIL);   // xem sp liên quan: vẫn giữ trang trước đó
+        }
     }
 
     public void goBack() {
@@ -110,9 +124,19 @@ public class ShopFrm extends JFrame {
         new LoginFrm().setVisible(true);
         dispose();
     }
-    
+
     public void showCart() {
-    cart.reload();
-    show(CART);
+        cart.reload();
+        show(CART);
+    }
+
+    public void showCheckout() {
+        checkout.reload();
+        show(CHECKOUT);
+    }
+
+    public void showOrders() {
+        orders.reload();
+        show(ORDERS);
     }
 }

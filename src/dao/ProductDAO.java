@@ -10,7 +10,6 @@ public class ProductDAO extends DAO {
         "SELECT p.*, c.Name AS CatName FROM Products p "
       + "LEFT JOIN Categories c ON p.CategoryId = c.Id ";
 
-    // Chuyển 1 dòng kết quả thành đối tượng Product
     private Product map(ResultSet rs) throws SQLException {
         Product p = new Product(
             rs.getInt("Id"), rs.getString("Name"),
@@ -21,8 +20,6 @@ public class ProductDAO extends DAO {
         p.setFeatured(rs.getBoolean("IsFeatured"));
         return p;
     }
-
-    // ===== PHẦN DÀNH CHO KHÁCH (Giai đoạn 2) =====
 
     // Sản phẩm nổi bật cho trang chủ
     public List<Product> getFeatured() {
@@ -84,8 +81,6 @@ public class ProductDAO extends DAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
-
-    // ===== PHẦN QUẢN TRỊ (dùng ở Giai đoạn 6) =====
 
     public List<Product> getAllProducts() {
         List<Product> list = new ArrayList<>();

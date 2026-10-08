@@ -10,7 +10,6 @@ public class HomeController {
     private final ProductDAO productDAO = new ProductDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
 
-    // Index(): dữ liệu cho trang chủ
     public List<Product> index() { return productDAO.getFeatured(); }
 
     public List<Category> categories() { return categoryDAO.getAll(); }

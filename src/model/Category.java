@@ -18,5 +18,5 @@ public class Category {
     public String getDescription() { return description; }
 
     @Override
-    public String toString() { return name; }   // để JComboBox hiển thị tên
+    public String toString() { return name; }   
 }

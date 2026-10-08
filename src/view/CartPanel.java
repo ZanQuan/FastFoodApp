@@ -68,7 +68,7 @@ public class CartPanel extends javax.swing.JPanel {
                         Math.min(it.getQuantity(), max), 1, max, 1));
             }
         });
-            
+
         btnRemove.addActionListener(e -> removeSelected());
         btnClear.addActionListener(e -> clearAll());
         btnCheckout.addActionListener(e -> checkout());
@@ -134,8 +134,10 @@ public class CartPanel extends javax.swing.JPanel {
     }
 
     private void checkout() {
-        // Giai đoạn 4 sẽ mở trang đặt hàng ở đây
-        JOptionPane.showMessageDialog(this, "Trang thanh toán sẽ làm ở Giai đoạn 4.");
+        if (controller.index().isEmpty()) {
+            return;
+        }
+        shell.showCheckout();
     }
 
     /**
