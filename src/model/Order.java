@@ -25,6 +25,19 @@ public class Order {
     private String paymentMethod;
     private String paymentStatus;
 
+    /** Bước tiếp theo nhân viên được phép chuyển. null = không còn bước nào cho nhân viên. */
+    public static String next(String status) {
+        if (CHO_XAC_NHAN.equals(status)) return DANG_CHUAN_BI;
+        if (DANG_CHUAN_BI.equals(status)) return DANG_GIAO;
+        if (DANG_GIAO.equals(status)) return DA_GIAO;
+        return null;   // "Đã giao" -> khách bấm "Đã nhận hàng" để Hoàn thành
+    }
+
+    /** Nhân viên chỉ được hủy khi đơn chưa giao đi. */
+    public static boolean staffCanCancel(String status) {
+        return CHO_XAC_NHAN.equals(status) || DANG_CHUAN_BI.equals(status);
+    }
+
     public Order() {}
 
     public Order(int id, int userId, String receiverName, String phone, String address,

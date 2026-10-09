@@ -4,8 +4,7 @@
  */
 package view;
 
-import controller.OrderController;
-import java.util.ArrayList;
+import controller.OrderController;import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -73,6 +72,7 @@ public class CheckoutPanel extends javax.swing.JPanel {
         setBackground(Theme.BG);
         Style.page(pnlTop, pnlMain, pnlFormWrap, center);
         Style.transparent(pnlMethod, pnlPay);
+        pnlMethod.setLayout(new java.awt.GridLayout(2, 1, 0, 2));
         Style.card(pnlForm, "Thông tin giao hàng");
         Style.card(scrollSummary, "Đơn hàng của bạn");
         Style.bar(pnlBottom);

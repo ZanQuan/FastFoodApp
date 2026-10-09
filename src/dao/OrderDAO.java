@@ -156,4 +156,76 @@ public class OrderDAO extends DAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
+
+    /** Tất cả đơn hàng. status rỗng = mọi trạng thái; keyword khớp tên, SĐT hoặc mã đơn. */
+    public List<Order> getAll(String status, String keyword) {
+        List<Order> list = new ArrayList<>();
+        if (con == null) return list;
+        boolean hasStatus = status != null && !status.trim().isEmpty();
+        String kw = keyword == null ? "" : keyword.trim().replace("#", "");
+        boolean hasKw = !kw.isEmpty();
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM Orders WHERE 1 = 1 ");
+        if (hasStatus) sql.append("AND Status = ? ");
+        if (hasKw) sql.append("AND (ReceiverName LIKE ? OR Phone LIKE ? OR CAST(Id AS NVARCHAR(20)) = ?) ");
+        sql.append("ORDER BY OrderDate DESC, Id DESC");
+        try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            int i = 1;
+            if (hasStatus) ps.setString(i++, status);
+            if (hasKw) {
+                ps.setString(i++, "%" + kw + "%");
+                ps.setString(i++, "%" + kw + "%");
+                ps.setString(i++, kw);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(map(rs));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    /** Chuyển trạng thái, chỉ thành công nếu đơn vẫn đang ở trạng thái "from" (tránh 2 người bấm cùng lúc). */
+    public boolean updateStatus(int orderId, String from, String to) {
+        if (con == null) return false;
+        String sql = "UPDATE Orders SET Status = ? WHERE Id = ? AND Status = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, to);
+            ps.setInt(2, orderId);
+            ps.setString(3, from);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    /** Nhân viên hủy đơn (chưa giao): đổi trạng thái + hoàn lại tồn kho. */
+    public boolean staffCancel(int orderId) throws SQLException {
+        if (con == null) return false;
+        boolean oldAuto = con.getAutoCommit();
+        con.setAutoCommit(false);
+        try {
+            String sql = "UPDATE Orders SET Status = ? WHERE Id = ? AND Status IN (?, ?)";
+            int rows;
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, Order.DA_HUY);
+                ps.setInt(2, orderId);
+                ps.setString(3, Order.CHO_XAC_NHAN);
+                ps.setString(4, Order.DANG_CHUAN_BI);
+                rows = ps.executeUpdate();
+            }
+            if (rows == 0) { con.rollback(); return false; }
+            String restore = "UPDATE p SET p.Stock = p.Stock + d.Quantity "
+                           + "FROM Products p JOIN OrderDetails d ON d.ProductId = p.Id "
+                           + "WHERE d.OrderId = ?";
+            try (PreparedStatement ps = con.prepareStatement(restore)) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
+            con.commit();
+            return true;
+        } catch (SQLException e) {
+            con.rollback();
+            throw e;
+        } finally {
+            con.setAutoCommit(oldAuto);
+        }
+    }
 }

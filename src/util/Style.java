@@ -14,22 +14,29 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+
 /**
  *
  * @author Lenovo
  */
 public class Style {
-    public static final Color SOFT = new Color(0xFFF1E6);      
+
+    public static final Color SOFT = new Color(0xFFF1E6);
     public static final Color SELECT = new Color(0xFFE0CC);
     public static final Color ZEBRA = new Color(0xFFFBF7);
     public static final Color LINE = new Color(0xF0EAE0);
 
     public static void page(JComponent... cs) {
-        for (JComponent c : cs) { c.setOpaque(true); c.setBackground(Theme.BG); }
+        for (JComponent c : cs) {
+            c.setOpaque(true);
+            c.setBackground(Theme.BG);
+        }
     }
 
     public static void transparent(JComponent... cs) {
-        for (JComponent c : cs) c.setOpaque(false);
+        for (JComponent c : cs) {
+            c.setOpaque(false);
+        }
     }
 
     public static void card(JComponent c, String title) {
@@ -40,7 +47,9 @@ public class Style {
         tb.setTitleFont(Theme.font(Font.BOLD, 15f));
         tb.setTitleColor(Theme.PRIMARY_DARK);
         c.setBorder(BorderFactory.createCompoundBorder(tb, Theme.pad(8, 12)));
-        if (c instanceof JScrollPane) ((JScrollPane) c).getViewport().setBackground(Theme.CARD);
+        if (c instanceof JScrollPane) {
+            ((JScrollPane) c).getViewport().setBackground(Theme.CARD);
+        }
     }
 
     public static void bar(JPanel p) {
@@ -76,8 +85,15 @@ public class Style {
         f.setBorder(normal);
         f.setPreferredSize(new Dimension(f.getPreferredSize().width, 38));
         f.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) { f.setBorder(focus); }
-            @Override public void focusLost(FocusEvent e) { f.setBorder(normal); }
+            @Override
+            public void focusGained(FocusEvent e) {
+                f.setBorder(focus);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                f.setBorder(normal);
+            }
         });
     }
 
@@ -96,11 +112,19 @@ public class Style {
         b.setBorder(Theme.pad(9, 20));
         hover(b, normal, hover);
         b.addPropertyChangeListener("enabled", e -> b.setBackground(b.isEnabled() ? normal : off));
-        if (!b.isEnabled()) b.setBackground(off);
+        if (!b.isEnabled()) {
+            b.setBackground(off);
+        }
     }
 
-    public static void secondary(JButton b) { outline(b, Theme.PRIMARY, new Color(0xFFF1E6)); }
-    public static void danger(JButton b) { outline(b, Theme.DANGER, new Color(0xFFE3E3)); }
+    public static void secondary(JButton b) {
+        outline(b, Theme.PRIMARY, new Color(0xFFF1E6));
+    }
+
+    public static void danger(JButton b) {
+        outline(b, Theme.DANGER, new Color(0xFFE3E3));
+    }
+
     private static void outline(JButton b, Color c, Color hoverBg) {
         base(b);
         Color grey = new Color(0xBBBBBB);
@@ -110,7 +134,9 @@ public class Style {
             b.setForeground(col);
             b.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(col, 1), Theme.pad(8, 18)));
-            if (!b.isEnabled()) b.setBackground(Color.WHITE);
+            if (!b.isEnabled()) {
+                b.setBackground(Color.WHITE);
+            }
         };
         paint.run();
         hover(b, Color.WHITE, hoverBg);
@@ -127,8 +153,19 @@ public class Style {
 
     private static void hover(JButton b, Color normal, Color over) {
         b.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { if (b.isEnabled()) b.setBackground(over); }
-            @Override public void mouseExited(MouseEvent e) { if (b.isEnabled()) b.setBackground(normal); }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (b.isEnabled()) {
+                    b.setBackground(over);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (b.isEnabled()) {
+                    b.setBackground(normal);
+                }
+            }
         });
     }
 
@@ -147,7 +184,11 @@ public class Style {
 
         for (int c = 0; c < t.getColumnCount(); c++) {
             boolean right = false;
-            for (int rc : rightCols) if (rc == c) right = true;
+            for (int rc : rightCols) {
+                if (rc == c) {
+                    right = true;
+                }
+            }
             t.getColumnModel().getColumn(c).setCellRenderer(new Cell(right));
         }
 
@@ -163,7 +204,11 @@ public class Style {
                 setBackground(SOFT);
                 setForeground(Theme.PRIMARY_DARK);
                 boolean right = false;
-                for (int rc : rightCols) if (rc == c) right = true;
+                for (int rc : rightCols) {
+                    if (rc == c) {
+                        right = true;
+                    }
+                }
                 setHorizontalAlignment(right ? SwingConstants.RIGHT : SwingConstants.LEFT);
                 setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0, 0, 2, 0, Theme.PRIMARY), Theme.pad(0, 12)));
@@ -172,9 +217,54 @@ public class Style {
         });
     }
 
+    public static void statusColumn(JTable t, int col) {
+        t.getColumnModel().getColumn(col).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable tb, Object v, boolean sel,
+                    boolean foc, int row, int c) {
+                super.getTableCellRendererComponent(tb, v, sel, false, row, c);
+                setBorder(Theme.pad(0, 12));
+                setFont(Theme.font(Font.BOLD, 14f));
+                String s = String.valueOf(v);
+                if (model.Order.DA_HUY.equals(s)) {
+                    setForeground(Theme.DANGER);
+                } else if (model.Order.HOAN_THANH.equals(s)) {
+                    setForeground(new Color(0x2B8A3E));
+                } else {
+                    setForeground(Theme.PRIMARY_DARK);
+                }
+                if (!sel) {
+                    setBackground(row % 2 == 0 ? Color.WHITE : ZEBRA);
+                }
+                return this;
+            }
+        });
+    }
+
+    public static JPanel statCard(String title, JLabel value, Color accent) {
+        JPanel p = new JPanel(new BorderLayout(0, 4));
+        p.setBackground(Theme.CARD);
+        p.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 5, 0, 0, accent),
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Theme.BORDER, 1), Theme.pad(12, 16))));
+        JLabel t = new JLabel(title);
+        t.setFont(Theme.font(Font.PLAIN, 13f));
+        t.setForeground(Theme.MUTED);
+        value.setFont(Theme.font(Font.BOLD, 26f));
+        value.setForeground(Theme.TEXT);
+        p.add(t, BorderLayout.NORTH);
+        p.add(value, BorderLayout.CENTER);
+        return p;
+    }
+
     private static class Cell extends DefaultTableCellRenderer {
+
         private final boolean right;
-        Cell(boolean right) { this.right = right; }
+
+        Cell(boolean right) {
+            this.right = right;
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable t, Object v, boolean sel,
@@ -182,7 +272,9 @@ public class Style {
             super.getTableCellRendererComponent(t, v, sel, false, row, col);
             setHorizontalAlignment(right ? SwingConstants.RIGHT : SwingConstants.LEFT);
             setBorder(Theme.pad(0, 12));
-            if (!sel) setBackground(row % 2 == 0 ? Color.WHITE : ZEBRA);
+            if (!sel) {
+                setBackground(row % 2 == 0 ? Color.WHITE : ZEBRA);
+            }
             return this;
         }
     }

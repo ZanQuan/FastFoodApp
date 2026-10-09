@@ -15,16 +15,107 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
-    public MainFrm() {
-        initComponents();
-    }
-    private model.User currentUser;
+    private static final String DASH = "dash", ORDERS = "orders";
+    private static final java.awt.Color SIDEBAR = new java.awt.Color(0x2B2420);
+
+    private final model.User currentUser;
+    private final DashboardPanel dashboard = new DashboardPanel();
+    private final ManageOrderPanel orders = new ManageOrderPanel();
+    private java.util.List<javax.swing.JButton> navButtons;
 
     public MainFrm(model.User user) {
-        this();
         this.currentUser = user;
-        setTitle("FastFood - Xin chào " + user.getFullName() + " (" + user.getRole() + ")");
+        initComponents();
+        setTitle("FastFood - Quản trị (" + user.getRole() + ")");
+        setSize(1200, 780);
+        setMinimumSize(new java.awt.Dimension(1000, 640));
         setLocationRelativeTo(null);
+
+        pnlContent.add(dashboard, DASH);
+        pnlContent.add(orders, ORDERS);
+
+        navButtons = java.util.Arrays.asList(btnDash, btnOrders, btnProducts, btnCategories, btnUsers);
+        applyStyle(user);
+
+        btnDash.addActionListener(e -> showDashboard());
+        btnOrders.addActionListener(e -> showOrders());
+        btnProducts.addActionListener(e -> comingSoon("Quản lý sản phẩm"));
+        btnCategories.addActionListener(e -> comingSoon("Quản lý danh mục"));
+        btnUsers.addActionListener(e -> comingSoon("Quản lý người dùng"));
+        btnLogout.addActionListener(e -> logout());
+
+        showDashboard();
+    }
+
+    private void applyStyle(model.User user) {
+        pnlSidebar.setBackground(SIDEBAR);
+        pnlSidebar.setPreferredSize(new java.awt.Dimension(230, 0));
+        util.Style.transparent(pnlHead, pnlMenuWrap, pnlMenu, pnlFoot);
+        pnlHead.setBorder(util.Theme.pad(20, 20));
+        pnlFoot.setBorder(util.Theme.pad(12, 0));
+        pnlContent.setBackground(util.Theme.BG);
+
+        lblBrand.setFont(util.Theme.font(java.awt.Font.BOLD, 24f));
+        lblBrand.setForeground(util.Theme.PRIMARY);
+        lblSub.setFont(util.Theme.font(java.awt.Font.PLAIN, 13f));
+        lblSub.setForeground(new java.awt.Color(0xBBB0A6));
+        lblWho.setFont(util.Theme.font(java.awt.Font.BOLD, 14f));
+        lblWho.setForeground(java.awt.Color.WHITE);
+        lblRole.setFont(util.Theme.font(java.awt.Font.PLAIN, 13f));
+        lblRole.setForeground(new java.awt.Color(0xBBB0A6));
+        lblWho.setText(user.getFullName() == null || user.getFullName().isEmpty()
+                ? user.getEmail() : user.getFullName());
+        lblRole.setText(user.getRole());
+
+        for (javax.swing.JButton b : navButtons) styleNav(b);
+        styleNav(btnLogout);
+
+        // mục chỉ Admin được thấy
+        boolean admin = user.isAdmin();
+        btnProducts.setVisible(admin);
+        btnCategories.setVisible(admin);
+        btnUsers.setVisible(admin);
+    }
+
+    private void styleNav(javax.swing.JButton b) {
+        b.setFont(util.Theme.font(java.awt.Font.BOLD, 15f));
+        b.setForeground(java.awt.Color.WHITE);
+        b.setBackground(SIDEBAR);
+        b.setOpaque(true);
+        b.setContentAreaFilled(true);
+        b.setBorderPainted(false);
+        b.setFocusPainted(false);
+        b.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        b.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 24, 12, 24));
+        b.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+    }
+
+    private void highlight(javax.swing.JButton active) {
+        for (javax.swing.JButton b : navButtons) {
+            b.setBackground(b == active ? util.Theme.PRIMARY : SIDEBAR);
+        }
+    }
+
+    private void showDashboard() {
+        dashboard.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, DASH);
+        highlight(btnDash);
+    }
+
+    private void showOrders() {
+        orders.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, ORDERS);
+        highlight(btnOrders);
+    }
+
+    private void comingSoon(String name) {
+        javax.swing.JOptionPane.showMessageDialog(this, name + " sẽ làm ở bước tiếp theo.");
+    }
+
+    private void logout() {
+        new controller.AccountController().logout();
+        new LoginFrm().setVisible(true);
+        dispose();
     }
 
     /**
@@ -36,18 +127,77 @@ public class MainFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        pnlSidebar = new javax.swing.JPanel();
+        pnlHead = new javax.swing.JPanel();
+        lblBrand = new javax.swing.JLabel();
+        lblSub = new javax.swing.JLabel();
+        lblWho = new javax.swing.JLabel();
+        lblRole = new javax.swing.JLabel();
+        pnlMenuWrap = new javax.swing.JPanel();
+        pnlMenu = new javax.swing.JPanel();
+        btnDash = new javax.swing.JButton();
+        btnOrders = new javax.swing.JButton();
+        btnProducts = new javax.swing.JButton();
+        btnCategories = new javax.swing.JButton();
+        btnUsers = new javax.swing.JButton();
+        pnlFoot = new javax.swing.JPanel();
+        btnLogout = new javax.swing.JButton();
+        pnlContent = new javax.swing.JPanel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 712, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 403, Short.MAX_VALUE)
-        );
+        pnlSidebar.setLayout(new java.awt.BorderLayout());
+
+        pnlHead.setLayout(new java.awt.GridLayout(4, 1, 0, 4));
+
+        lblBrand.setText("FastFood");
+        pnlHead.add(lblBrand);
+
+        lblSub.setText("Trang quản trị");
+        pnlHead.add(lblSub);
+
+        lblWho.setText("x");
+        pnlHead.add(lblWho);
+
+        lblRole.setText("y");
+        pnlHead.add(lblRole);
+
+        pnlSidebar.add(pnlHead, java.awt.BorderLayout.NORTH);
+
+        pnlMenuWrap.setLayout(new java.awt.BorderLayout());
+
+        pnlMenu.setLayout(new java.awt.GridLayout(5, 1));
+
+        btnDash.setText("Tổng quan");
+        pnlMenu.add(btnDash);
+
+        btnOrders.setText("Đơn hàng");
+        pnlMenu.add(btnOrders);
+
+        btnProducts.setText("Sản phẩm");
+        pnlMenu.add(btnProducts);
+
+        btnCategories.setText("Danh mục");
+        pnlMenu.add(btnCategories);
+
+        btnUsers.setText("Người dùng");
+        pnlMenu.add(btnUsers);
+
+        pnlMenuWrap.add(pnlMenu, java.awt.BorderLayout.NORTH);
+
+        pnlSidebar.add(pnlMenuWrap, java.awt.BorderLayout.CENTER);
+
+        pnlFoot.setLayout(new java.awt.BorderLayout());
+
+        btnLogout.setText("Đăng xuất");
+        pnlFoot.add(btnLogout, java.awt.BorderLayout.CENTER);
+
+        pnlSidebar.add(pnlFoot, java.awt.BorderLayout.SOUTH);
+
+        getContentPane().add(pnlSidebar, java.awt.BorderLayout.WEST);
+
+        pnlContent.setLayout(new java.awt.CardLayout());
+        getContentPane().add(pnlContent, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -55,28 +205,23 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new MainFrm().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCategories;
+    private javax.swing.JButton btnDash;
+    private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnOrders;
+    private javax.swing.JButton btnProducts;
+    private javax.swing.JButton btnUsers;
+    private javax.swing.JLabel lblBrand;
+    private javax.swing.JLabel lblRole;
+    private javax.swing.JLabel lblSub;
+    private javax.swing.JLabel lblWho;
+    private javax.swing.JPanel pnlContent;
+    private javax.swing.JPanel pnlFoot;
+    private javax.swing.JPanel pnlHead;
+    private javax.swing.JPanel pnlMenu;
+    private javax.swing.JPanel pnlMenuWrap;
+    private javax.swing.JPanel pnlSidebar;
     // End of variables declaration//GEN-END:variables
 }
