@@ -20,72 +20,108 @@ import javax.swing.table.DefaultTableModel;
 import model.Order;
 import model.OrderDetail;
 import util.Format;
+import util.Style;
+import util.Theme;
+
 /**
  *
  * @author Lenovo
  */
 public class OrdersPanel extends javax.swing.JPanel {
-
+ 
     /**
      * Creates new form OrdersPanel
      */
     private static final SimpleDateFormat DATE = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
+ 
     private ShopFrm shell;
     private final OrderController controller = new OrderController();
     private DefaultTableModel orderModel;
     private DefaultTableModel itemModel;
     private List<Order> orders = new ArrayList<>();
     private final Map<Integer, String> lastStatus = new HashMap<>();
-
+ 
     public OrdersPanel(ShopFrm shell) {
         this.shell = shell;
         initComponents();
-
+ 
         orderModel = new DefaultTableModel(
                 new Object[]{"Mã đơn", "Ngày đặt", "Tổng tiền", "Thanh toán", "Trạng thái"}, 0) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tblOrders.setModel(orderModel);
-        tblOrders.setRowHeight(26);
         tblOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblOrders.getTableHeader().setReorderingAllowed(false);
-
+ 
         itemModel = new DefaultTableModel(
                 new Object[]{"Món", "Đơn giá", "SL", "Thành tiền"}, 0) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tblItems.setModel(itemModel);
-        tblItems.setRowHeight(26);
-        tblItems.getTableHeader().setReorderingAllowed(false);
-
-        DefaultTableCellRenderer right = new DefaultTableCellRenderer();
-        right.setHorizontalAlignment(SwingConstants.RIGHT);
-        tblOrders.getColumnModel().getColumn(2).setCellRenderer(right);
-        for (int c = 1; c <= 3; c++) tblItems.getColumnModel().getColumn(c).setCellRenderer(right);
-
+ 
+        applyStyle();
+ 
         tblOrders.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) showDetail();
         });
-
+ 
         btnRefresh.addActionListener(e -> reload());
         btnCancel.addActionListener(e -> cancelOrder());
         btnReceived.addActionListener(e -> confirmReceived());
-
+ 
         // "Thông báo" theo kiểu polling: 10 giây tải lại 1 lần khi trang đang hiện
         new Timer(10000, e -> { if (isShowing()) refresh(true); }).start();
         refresh(false);
     }
-
-    /** ShopFrm gọi mỗi lần mở trang này. */
+ 
+    private void applyStyle() {
+        setBackground(Theme.BG);
+        Style.page(pnlTop, pnlMain);
+        Style.transparent(pnlInfo);
+        Style.bar(pnlBottom);
+        Style.heading(lblTitle);
+        pnlMain.setBorder(Theme.pad(4, 16));
+        ((java.awt.GridLayout) pnlMain.getLayout()).setVgap(12);
+        Style.card(scrollOrders, "Lịch sử đơn hàng");
+        Style.card(pnlDetail, "Chi tiết & theo dõi");
+        Style.table(tblOrders, 2);
+        Style.table(tblItems, 1, 2, 3);
+        tblOrders.getColumnModel().getColumn(0).setPreferredWidth(70);
+        tblOrders.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable t, Object v,
+                    boolean sel, boolean foc, int row, int col) {
+                super.getTableCellRendererComponent(t, v, sel, false, row, col);
+                setBorder(Theme.pad(0, 12));
+                setFont(Theme.font(java.awt.Font.BOLD, 14f));
+                String s = String.valueOf(v);
+                if (Order.DA_HUY.equals(s)) setForeground(Theme.DANGER);
+                else if (Order.HOAN_THANH.equals(s)) setForeground(new java.awt.Color(0x2B8A3E));
+                else setForeground(Theme.PRIMARY_DARK);
+                if (!sel) setBackground(row % 2 == 0 ? java.awt.Color.WHITE : Style.ZEBRA);
+                return this;
+            }
+        });
+ 
+        pnlInfo.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 8, 0));
+        ((java.awt.GridLayout) pnlInfo.getLayout()).setVgap(6);
+        lblTrack.setFont(Theme.font(java.awt.Font.PLAIN, 15f));
+        lblShip.setFont(Theme.font(java.awt.Font.PLAIN, 14f));
+        lblShip.setForeground(Theme.TEXT);
+        scrollItems.setBorder(javax.swing.BorderFactory.createLineBorder(Theme.BORDER));
+ 
+        Style.primary(btnReceived);
+        Style.secondary(btnRefresh);
+        Style.danger(btnCancel);
+    }
+ 
     public void reload() { refresh(false); }
-
+ 
     private void refresh(boolean notify) {
         int keepId = selectedId();
         orders = controller.myOrders();
-
+ 
         StringBuilder changes = new StringBuilder();
         for (Order o : orders) {
             String prev = lastStatus.get(o.getId());
@@ -95,7 +131,7 @@ public class OrdersPanel extends javax.swing.JPanel {
             }
             lastStatus.put(o.getId(), o.getStatus());
         }
-
+ 
         orderModel.setRowCount(0);
         int select = orders.isEmpty() ? -1 : 0;
         for (int i = 0; i < orders.size(); i++) {
@@ -111,24 +147,24 @@ public class OrdersPanel extends javax.swing.JPanel {
         }
         if (select >= 0) tblOrders.setRowSelectionInterval(select, select);
         else showDetail();
-
+ 
         if (changes.length() > 0) {
             JOptionPane.showMessageDialog(this, changes.toString().trim(),
                     "Cập nhật đơn hàng", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+ 
     private Order selectedOrder() {
         int row = tblOrders.getSelectedRow();
         if (row < 0 || row >= orders.size()) return null;
         return orders.get(row);
     }
-
+ 
     private int selectedId() {
         Order o = selectedOrder();
         return o == null ? -1 : o.getId();
     }
-
+ 
     private void showDetail() {
         itemModel.setRowCount(0);
         Order o = selectedOrder();
@@ -154,7 +190,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         btnReceived.setEnabled(Order.DANG_GIAO.equals(o.getStatus())
                 || Order.DA_GIAO.equals(o.getStatus()));
     }
-
+ 
     /** Thanh tiến trình:  bước đã qua / đang ở,  bước chưa tới. */
     private String trackHtml(Order o) {
         if (Order.DA_HUY.equals(o.getStatus())) {
@@ -172,7 +208,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         }
         return sb.append("</html>").toString();
     }
-
+ 
     private void cancelOrder() {
         Order o = selectedOrder();
         if (o == null) return;
@@ -187,7 +223,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         }
         refresh(false);
     }
-
+ 
     private void confirmReceived() {
         Order o = selectedOrder();
         if (o == null) return;

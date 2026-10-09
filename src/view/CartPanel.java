@@ -11,24 +11,25 @@ import javax.swing.table.DefaultTableModel;
 import model.CartItem;
 import util.Format;
 import util.Theme;
+import util.Style;
 
 /**
  *
  * @author Lenovo
  */
 public class CartPanel extends javax.swing.JPanel {
-
+ 
     /**
      * Creates new form CartPanel
      */
     private ShopFrm shell;
     private final CartController controller = new CartController();
     private DefaultTableModel tableModel;
-
+ 
     public CartPanel(ShopFrm shell) {
         this.shell = shell;
         initComponents();
-
+ 
         tableModel = new DefaultTableModel(
                 new Object[]{"Món", "Đơn giá", "Số lượng", "Thành tiền"}, 0) {
             @Override
@@ -37,26 +38,11 @@ public class CartPanel extends javax.swing.JPanel {
             }
         };
         tblCartItems.setModel(tableModel);
-        tblCartItems.setRowHeight(28);
-        javax.swing.table.DefaultTableCellRenderer right = new javax.swing.table.DefaultTableCellRenderer();
-        right.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        right.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));
-        javax.swing.table.DefaultTableCellRenderer left = new javax.swing.table.DefaultTableCellRenderer();
-        left.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));
-        tblCartItems.getColumnModel().getColumn(0).setCellRenderer(left);
-        for (int c = 1; c <= 3; c++) {
-            tblCartItems.getColumnModel().getColumn(c).setCellRenderer(right);
-        }
-        tblCartItems.getTableHeader().setReorderingAllowed(false);
-        tblCartItems.setFont(Theme.font(java.awt.Font.PLAIN, 14f));
-        tblCartItems.getTableHeader().setFont(Theme.font(java.awt.Font.BOLD, 14f));
         tblCartItems.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblCartItems.getColumnModel().getColumn(0).setPreferredWidth(300);
-        tblCartItems.setFont(Theme.font(java.awt.Font.PLAIN, 14f));
-        tblCartItems.getTableHeader().setFont(Theme.font(java.awt.Font.BOLD, 14f));
+        applyStyle();
         spnQty.setModel(new SpinnerNumberModel(1, 1, 99, 1));
-
-        // Khi chọn một dòng thì spinner hiện số lượng hiện tại
+ 
         tblCartItems.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
                 return;
@@ -68,14 +54,40 @@ public class CartPanel extends javax.swing.JPanel {
                         Math.min(it.getQuantity(), max), 1, max, 1));
             }
         });
-
+ 
         btnRemove.addActionListener(e -> removeSelected());
         btnClear.addActionListener(e -> clearAll());
         btnCheckout.addActionListener(e -> checkout());
-
+ 
         reload();
     }
-
+ 
+    private void applyStyle() {
+        setBackground(Theme.BG);
+        scrollCart.setBorder(null);
+        Style.page(pnlTop);
+        Style.transparent(pnlActions, pnlPay);
+        Style.bar(pnlBottom);
+        Style.heading(lblTitle);
+        Style.label(jLabel1);
+        spnQty.setPreferredSize(new java.awt.Dimension(70, 36));
+        spnQty.setFont(Theme.font(java.awt.Font.PLAIN, 14f));
+        Style.card(scrollCart, "Món trong giỏ");
+        // chừa lề quanh thẻ bảng
+        javax.swing.JPanel holder = new javax.swing.JPanel(new java.awt.BorderLayout());
+        holder.setBackground(Theme.BG);
+        holder.setBorder(Theme.pad(4, 16));
+        remove(scrollCart);
+        holder.add(scrollCart, java.awt.BorderLayout.CENTER);
+        add(holder, java.awt.BorderLayout.CENTER);
+        Style.table(tblCartItems, 1, 2, 3);
+        Style.primary(btnCheckout);
+        Style.secondary(btnUpdate);
+        Style.danger(btnRemove);
+        Style.danger(btnClear);
+        Style.money(lblTotal);
+    }
+ 
     public void reload() {
         tableModel.setRowCount(0);
         for (CartItem it : controller.index()) {
@@ -93,7 +105,7 @@ public class CartPanel extends javax.swing.JPanel {
         btnClear.setEnabled(has);
         btnCheckout.setEnabled(has);
     }
-
+ 
     private CartItem selectedItem() {
         int row = tblCartItems.getSelectedRow();
         if (row < 0 || row >= controller.index().size()) {
@@ -101,7 +113,7 @@ public class CartPanel extends javax.swing.JPanel {
         }
         return controller.index().get(row);
     }
-
+ 
     private void updateQuantity() {
         CartItem it = selectedItem();
         if (it == null) {
@@ -114,7 +126,7 @@ public class CartPanel extends javax.swing.JPanel {
         }
         reload();
     }
-
+ 
     private void removeSelected() {
         CartItem it = selectedItem();
         if (it == null) {
@@ -124,7 +136,7 @@ public class CartPanel extends javax.swing.JPanel {
         controller.remove(it.getProductId());
         reload();
     }
-
+ 
     private void clearAll() {
         if (JOptionPane.showConfirmDialog(this, "Xóa toàn bộ giỏ hàng?",
                 "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -132,7 +144,7 @@ public class CartPanel extends javax.swing.JPanel {
             reload();
         }
     }
-
+ 
     private void checkout() {
         if (controller.index().isEmpty()) {
             return;

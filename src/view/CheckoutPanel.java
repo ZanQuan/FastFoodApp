@@ -16,6 +16,9 @@ import model.User;
 import util.AppSession;
 import util.CartHelper;
 import util.Format;
+import util.Style;
+import util.Theme;
+
 /**
  *
  * @author Lenovo
@@ -35,29 +38,60 @@ public class CheckoutPanel extends javax.swing.JPanel {
 
         summaryModel = new DefaultTableModel(new Object[]{"Món", "SL", "Thành tiền"}, 0) {
             @Override
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         tblSummary.setModel(summaryModel);
-        tblSummary.setRowHeight(26);
-        tblSummary.getTableHeader().setReorderingAllowed(false);
-        DefaultTableCellRenderer right = new DefaultTableCellRenderer();
-        right.setHorizontalAlignment(SwingConstants.RIGHT);
         tblSummary.getColumnModel().getColumn(0).setPreferredWidth(220);
         tblSummary.getColumnModel().getColumn(1).setPreferredWidth(40);
-        tblSummary.getColumnModel().getColumn(1).setCellRenderer(right);
-        tblSummary.getColumnModel().getColumn(2).setCellRenderer(right);
 
         ButtonGroup group = new ButtonGroup();
         group.add(rdoCod);
         group.add(rdoVnpay);
         rdoCod.setSelected(true);
-        rdoVnpay.setEnabled(false);   
+        rdoVnpay.setEnabled(false);
 
+        applyStyle();
         btnBack.addActionListener(e -> shell.showCart());
         btnPlace.addActionListener(e -> placeOrder());
     }
 
-    /** ShopFrm gọi mỗi lần mở trang này. */
+    private void applyStyle() {
+        remove(pnlMain);
+        javax.swing.JPanel center = new javax.swing.JPanel(new java.awt.BorderLayout());
+        center.setBorder(Theme.pad(12, 16));
+        center.add(pnlMain, java.awt.BorderLayout.NORTH);
+        add(center, java.awt.BorderLayout.CENTER);
+        ((java.awt.GridLayout) pnlMain.getLayout()).setHgap(16);
+        java.awt.GridLayout gl = (java.awt.GridLayout) pnlForm.getLayout();
+        gl.setVgap(10);
+        gl.setHgap(12);
+        pnlFormWrap.add(pnlForm, java.awt.BorderLayout.CENTER);   // thẻ trái cao bằng thẻ phải
+        tblSummary.setPreferredScrollableViewportSize(new java.awt.Dimension(300, 230));
+
+        setBackground(Theme.BG);
+        Style.page(pnlTop, pnlMain, pnlFormWrap, center);
+        Style.transparent(pnlMethod, pnlPay);
+        Style.card(pnlForm, "Thông tin giao hàng");
+        Style.card(scrollSummary, "Đơn hàng của bạn");
+        Style.bar(pnlBottom);
+
+        Style.heading(lblTitle);
+        for (javax.swing.JLabel l : new javax.swing.JLabel[]{jLabel1, jLabel2, jLabel3, jLabel4, jLabel5}) {
+            Style.label(l);
+        }
+        for (javax.swing.JTextField f : new javax.swing.JTextField[]{txtName, txtPhone, txtAddress, txtNote}) {
+            Style.field(f);
+        }
+        Style.radio(rdoCod);
+        Style.radio(rdoVnpay);
+        Style.money(lblTotal);
+        Style.primary(btnPlace);
+        Style.secondary(btnBack);
+        Style.table(tblSummary, 1, 2);
+    }
+
     public void reload() {
         summaryModel.setRowCount(0);
         for (CartItem it : CartHelper.getItems()) {
@@ -91,7 +125,6 @@ public class CheckoutPanel extends javax.swing.JPanel {
                     "Không thể đặt hàng", JOptionPane.WARNING_MESSAGE);
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -140,7 +173,7 @@ public class CheckoutPanel extends javax.swing.JPanel {
         pnlFormWrap.setLayout(new java.awt.BorderLayout());
 
         pnlForm.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin giao hàng"));
-        pnlForm.setLayout(new java.awt.GridLayout(5, 2, 8, 0));
+        pnlForm.setLayout(new java.awt.GridLayout(5, 2, 8, 8));
 
         jLabel1.setText("Người nhận");
         pnlForm.add(jLabel1);
@@ -161,9 +194,9 @@ public class CheckoutPanel extends javax.swing.JPanel {
         jLabel5.setText("Thanh toán");
         pnlForm.add(jLabel5);
 
-        pnlMethod.setLayout(new java.awt.GridLayout(2, 1));
+        pnlMethod.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        rdoCod.setText("Thanh toán khi nhận hàng (COD)");
+        rdoCod.setText("Tiền mặt (COD)");
         pnlMethod.add(rdoCod);
 
         rdoVnpay.setText("VNPay (sắp có)");
