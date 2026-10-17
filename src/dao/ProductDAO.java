@@ -82,19 +82,29 @@ public class ProductDAO extends DAO {
         return list;
     }
 
-    public List<Product> getAllProducts() {
+    // ===== PHẦN DÀNH CHO ADMIN (Giai đoạn 6b) =====
+
+    /** Tất cả món (kể cả món đang ẩn). keyword rỗng = không lọc. */
+    public List<Product> getAllProducts(String keyword) {
         List<Product> list = new ArrayList<>();
         if (con == null) return list;
-        try (PreparedStatement ps = con.prepareStatement(SELECT_BASE);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) list.add(map(rs));
+        boolean hasKw = keyword != null && !keyword.trim().isEmpty();
+        String sql = SELECT_BASE + (hasKw ? "WHERE p.Name LIKE ? " : "") + "ORDER BY p.Id DESC";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            if (hasKw) ps.setString(1, "%" + keyword.trim() + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(map(rs));
+            }
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
 
+    public List<Product> getAllProducts() { return getAllProducts(""); }
+
     public boolean addProduct(Product p) {
-        String sql = "INSERT INTO Products(Name,Description,Price,Stock,ImageUrl,IsAvailable,CategoryId) "
-                   + "VALUES(?,?,?,?,?,?,?)";
+        if (con == null) return false;
+        String sql = "INSERT INTO Products(Name,Description,Price,Stock,ImageUrl,IsAvailable,IsFeatured,CategoryId) "
+                   + "VALUES(?,?,?,?,?,?,?,?)";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
@@ -102,29 +112,49 @@ public class ProductDAO extends DAO {
             ps.setInt(4, p.getStock());
             ps.setString(5, p.getImageUrl());
             ps.setBoolean(6, p.isAvailable());
-            ps.setInt(7, p.getCategoryId());
+            ps.setBoolean(7, p.isFeatured());
+            ps.setInt(8, p.getCategoryId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
     public boolean updateProduct(Product p) {
-        String sql = "UPDATE Products SET Name=?,Description=?,Price=?,Stock=?,IsAvailable=?,CategoryId=? WHERE Id=?";
+        if (con == null) return false;
+        String sql = "UPDATE Products SET Name=?,Description=?,Price=?,Stock=?,ImageUrl=?,"
+                   + "IsAvailable=?,IsFeatured=?,CategoryId=? WHERE Id=?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
             ps.setDouble(3, p.getPrice());
             ps.setInt(4, p.getStock());
-            ps.setBoolean(5, p.isAvailable());
-            ps.setInt(6, p.getCategoryId());
-            ps.setInt(7, p.getId());
+            ps.setString(5, p.getImageUrl());
+            ps.setBoolean(6, p.isAvailable());
+            ps.setBoolean(7, p.isFeatured());
+            ps.setInt(8, p.getCategoryId());
+            ps.setInt(9, p.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    public boolean deleteProduct(int id) {
+    /**
+     * Xóa món. Trả về: 1 = đã xóa hẳn, 2 = món đã có trong đơn hàng nên chỉ ẨN (không xóa được),
+     * 0 = lỗi.
+     */
+    public int deleteProduct(int id) {
+        if (con == null) return 0;
         try (PreparedStatement ps = con.prepareStatement("DELETE FROM Products WHERE Id=?")) {
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
+            return ps.executeUpdate() > 0 ? 1 : 0;
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 547) {      // vướng khóa ngoại: món đã nằm trong OrderDetails
+                String hide = "UPDATE Products SET IsAvailable = 0, IsFeatured = 0 WHERE Id = ?";
+                try (PreparedStatement ps = con.prepareStatement(hide)) {
+                    ps.setInt(1, id);
+                    return ps.executeUpdate() > 0 ? 2 : 0;
+                } catch (SQLException e2) { e2.printStackTrace(); return 0; }
+            }
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

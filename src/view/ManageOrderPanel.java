@@ -233,7 +233,6 @@ public class ManageOrderPanel extends javax.swing.JPanel {
         jLabel1.setText("Trạng thái:");
         pnlTop.add(jLabel1);
 
-        cboStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         pnlTop.add(cboStatus);
         pnlTop.add(txtSearch);
 

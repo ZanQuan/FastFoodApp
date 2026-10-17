@@ -15,12 +15,14 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
-    private static final String DASH = "dash", ORDERS = "orders";
+    private static final String DASH = "dash", ORDERS = "orders", PRODUCTS = "products", CATEGORIES = "categories";
     private static final java.awt.Color SIDEBAR = new java.awt.Color(0x2B2420);
 
     private final model.User currentUser;
     private final DashboardPanel dashboard = new DashboardPanel();
     private final ManageOrderPanel orders = new ManageOrderPanel();
+    private ManageProductPanel products;       // chỉ Admin dùng, tạo khi cần
+    private ManageCategoryPanel categories;
     private java.util.List<javax.swing.JButton> navButtons;
 
     public MainFrm(model.User user) {
@@ -31,16 +33,23 @@ public class MainFrm extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1000, 640));
         setLocationRelativeTo(null);
 
+        // các trang bên phải (pnlContent đã đặt Card Layout trong Design)
         pnlContent.add(dashboard, DASH);
         pnlContent.add(orders, ORDERS);
+        if (user.isAdmin()) {
+            products = new ManageProductPanel();
+            categories = new ManageCategoryPanel();
+            pnlContent.add(products, PRODUCTS);
+            pnlContent.add(categories, CATEGORIES);
+        }
 
         navButtons = java.util.Arrays.asList(btnDash, btnOrders, btnProducts, btnCategories, btnUsers);
         applyStyle(user);
 
         btnDash.addActionListener(e -> showDashboard());
         btnOrders.addActionListener(e -> showOrders());
-        btnProducts.addActionListener(e -> comingSoon("Quản lý sản phẩm"));
-        btnCategories.addActionListener(e -> comingSoon("Quản lý danh mục"));
+        btnProducts.addActionListener(e -> showProducts());
+        btnCategories.addActionListener(e -> showCategories());
         btnUsers.addActionListener(e -> comingSoon("Quản lý người dùng"));
         btnLogout.addActionListener(e -> logout());
 
@@ -108,6 +117,18 @@ public class MainFrm extends javax.swing.JFrame {
         highlight(btnOrders);
     }
 
+    private void showProducts() {
+        products.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, PRODUCTS);
+        highlight(btnProducts);
+    }
+
+    private void showCategories() {
+        categories.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, CATEGORIES);
+        highlight(btnCategories);
+    }
+
     private void comingSoon(String name) {
         javax.swing.JOptionPane.showMessageDialog(this, name + " sẽ làm ở bước tiếp theo.");
     }
@@ -117,6 +138,7 @@ public class MainFrm extends javax.swing.JFrame {
         new LoginFrm().setVisible(true);
         dispose();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
