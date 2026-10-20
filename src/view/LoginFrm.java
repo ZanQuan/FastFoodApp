@@ -176,9 +176,13 @@ public class LoginFrm extends javax.swing.JFrame implements ActionListener {
 
     model.User user = accountController.login(email, password);
     if (user == null) {
+        String msg = accountController.isLocked(email)
+                ? "Tài khoản này đã bị khóa. Vui lòng liên hệ quản trị viên."
+                : "Sai email hoặc mật khẩu!";
         javax.swing.JOptionPane.showMessageDialog(this,
-            "Sai email hoặc mật khẩu!", "Đăng nhập thất bại",
+            msg, "Đăng nhập thất bại",
             javax.swing.JOptionPane.ERROR_MESSAGE);
+
         txtPassword.setText("");
         txtPassword.requestFocus();
         return;

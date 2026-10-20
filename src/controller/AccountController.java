@@ -36,6 +36,11 @@ public class AccountController {
         return u;
     }
 
+    /** Để LoginFrm báo đúng lý do khi đăng nhập thất bại. */
+    public boolean isLocked(String email) {
+        return userDAO.isLocked(email);
+    }
+
     public void logout() {
         AppSession.clear();
     }

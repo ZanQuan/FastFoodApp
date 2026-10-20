@@ -15,7 +15,7 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
-    private static final String DASH = "dash", ORDERS = "orders", PRODUCTS = "products", CATEGORIES = "categories";
+    private static final String DASH = "dash", ORDERS = "orders", PRODUCTS = "products", CATEGORIES = "categories", USERS = "users";
     private static final java.awt.Color SIDEBAR = new java.awt.Color(0x2B2420);
 
     private final model.User currentUser;
@@ -23,6 +23,7 @@ public class MainFrm extends javax.swing.JFrame {
     private final ManageOrderPanel orders = new ManageOrderPanel();
     private ManageProductPanel products;       // chỉ Admin dùng, tạo khi cần
     private ManageCategoryPanel categories;
+    private ManageUserPanel users;
     private java.util.List<javax.swing.JButton> navButtons;
 
     public MainFrm(model.User user) {
@@ -41,6 +42,8 @@ public class MainFrm extends javax.swing.JFrame {
             categories = new ManageCategoryPanel();
             pnlContent.add(products, PRODUCTS);
             pnlContent.add(categories, CATEGORIES);
+            users = new ManageUserPanel();
+            pnlContent.add(users, USERS);
         }
 
         navButtons = java.util.Arrays.asList(btnDash, btnOrders, btnProducts, btnCategories, btnUsers);
@@ -50,7 +53,7 @@ public class MainFrm extends javax.swing.JFrame {
         btnOrders.addActionListener(e -> showOrders());
         btnProducts.addActionListener(e -> showProducts());
         btnCategories.addActionListener(e -> showCategories());
-        btnUsers.addActionListener(e -> comingSoon("Quản lý người dùng"));
+        btnUsers.addActionListener(e -> showUsers());
         btnLogout.addActionListener(e -> logout());
 
         showDashboard();
@@ -129,6 +132,12 @@ public class MainFrm extends javax.swing.JFrame {
         highlight(btnCategories);
     }
 
+    private void showUsers() {
+        users.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, USERS);
+        highlight(btnUsers);
+    }
+
     private void comingSoon(String name) {
         javax.swing.JOptionPane.showMessageDialog(this, name + " sẽ làm ở bước tiếp theo.");
     }
@@ -138,6 +147,7 @@ public class MainFrm extends javax.swing.JFrame {
         new LoginFrm().setVisible(true);
         dispose();
     }
+
 
 
     /**

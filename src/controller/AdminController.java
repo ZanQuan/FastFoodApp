@@ -4,6 +4,7 @@ import dao.CategoryDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import dao.StatsDAO;
+import dao.UserDAO;
 import java.sql.SQLException;
 import java.util.List;
 import model.Category;
@@ -19,6 +20,7 @@ public class AdminController {
     private final StatsDAO statsDAO = new StatsDAO();
     private final ProductDAO productDAO = new ProductDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final UserDAO userDAO = new UserDAO();
 
     private void requireStaff() {
         User u = AppSession.getCurrentUser();
@@ -135,5 +137,45 @@ public class AdminController {
         int n = categoryDAO.countProducts(id);
         if (n > 0) return "Danh mục còn " + n + " món, hãy chuyển hoặc xóa các món đó trước.";
         return categoryDAO.delete(id) ? null : "Không xóa được danh mục (xem cửa sổ Output).";
+    }
+
+    // ---------- Người dùng (chỉ Admin) ----------
+    private static final java.util.List<String> ROLES = java.util.Arrays.asList("User", "NhanVien", "Admin");
+
+    private boolean isSelf(int userId) {
+        User me = AppSession.getCurrentUser();
+        return me != null && me.getId() == userId;
+    }
+
+    /** Mỗi dòng: {id, email, fullName, role, locked}. */
+    public List<Object[]> users(String keyword) {
+        requireAdmin();
+        return userDAO.getAll(keyword);
+    }
+
+    /** Đổi vai trò. Trả về null nếu OK. */
+    public String changeRole(int userId, String role) {
+        requireAdmin();
+        if (!ROLES.contains(role)) return "Vai trò không hợp lệ.";
+        if (isSelf(userId)) return "Bạn không thể tự đổi vai trò của chính mình.";
+        return userDAO.updateRole(userId, role) ? null : "Không lưu được (xem cửa sổ Output).";
+    }
+
+    /** Khóa / mở khóa. Trả về null nếu OK. */
+    public String setLocked(int userId, boolean locked) {
+        requireAdmin();
+        if (isSelf(userId)) return "Bạn không thể tự khóa tài khoản của chính mình.";
+        return userDAO.setLocked(userId, locked) ? null : "Không lưu được (xem cửa sổ Output).";
+    }
+
+    /** Đặt lại mật khẩu ngẫu nhiên. Trả về mật khẩu mới, hoặc null nếu thất bại. */
+    public String resetPassword(int userId) {
+        requireAdmin();
+        String alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"; // bỏ ký tự dễ nhầm
+        java.security.SecureRandom rnd = new java.security.SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) sb.append(alphabet.charAt(rnd.nextInt(alphabet.length())));
+        String pw = sb.toString();
+        return userDAO.resetPassword(userId, pw) ? pw : null;
     }
 }
