@@ -3,4 +3,5 @@ dist/
 nbproject/private/
 db.properties
 vnpay.properties
+mail.properties
 *.class

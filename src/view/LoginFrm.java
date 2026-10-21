@@ -66,6 +66,11 @@ public class LoginFrm extends javax.swing.JFrame implements ActionListener {
         btnLogin.setText("Đăng nhập");
 
         lblForgot.setText("Quên mật khẩu?");
+        lblForgot.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblForgotMouseClicked(evt);
+            }
+        });
 
         lblRegister.setText("Chưa có tài khoản? Đăng ký");
         lblRegister.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -132,6 +137,12 @@ public class LoginFrm extends javax.swing.JFrame implements ActionListener {
         new RegisterFrm().setVisible(true);
         this.dispose();// TODO add your handling code here:
     }//GEN-LAST:event_lblRegisterMouseClicked
+
+    private void lblForgotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblForgotMouseClicked
+        ForgotPasswordDlg dlg = new ForgotPasswordDlg(this, true);
+        dlg.setEmail(txtEmail.getText().trim());
+        dlg.setVisible(true);
+    }//GEN-LAST:event_lblForgotMouseClicked
 
     /**
      * @param args the command line arguments

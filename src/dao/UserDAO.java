@@ -134,4 +134,31 @@ public class UserDAO extends DAO {
             return false;
         }
     }
+    
+    /** Trả về Id của tài khoản có email này, hoặc -1 nếu không có. */
+    public int findIdByEmail(String email) {
+        if (con == null) return -1;
+        try (PreparedStatement ps = con.prepareStatement("SELECT Id FROM Users WHERE Email = ?")) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public boolean updatePassword(int id, String newPassword) {
+        if (con == null) return false;
+        try (PreparedStatement ps = con.prepareStatement("UPDATE Users SET PasswordHash = ? WHERE Id = ?")) {
+            ps.setString(1, PasswordUtil.hash(newPassword));
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
