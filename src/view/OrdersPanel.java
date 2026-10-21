@@ -69,6 +69,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         btnRefresh.addActionListener(e -> reload());
         btnCancel.addActionListener(e -> cancelOrder());
         btnReceived.addActionListener(e -> confirmReceived());
+        btnPay.addActionListener(e -> payOrder());
  
         // "Thông báo" theo kiểu polling: 10 giây tải lại 1 lần khi trang đang hiện
         new Timer(10000, e -> { if (isShowing()) refresh(true); }).start();
@@ -112,6 +113,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         scrollItems.setBorder(javax.swing.BorderFactory.createLineBorder(Theme.BORDER));
  
         Style.primary(btnReceived);
+        Style.primary(btnPay);
         Style.secondary(btnRefresh);
         Style.danger(btnCancel);
     }
@@ -173,6 +175,7 @@ public class OrdersPanel extends javax.swing.JPanel {
             lblShip.setText(" ");
             btnCancel.setEnabled(false);
             btnReceived.setEnabled(false);
+            btnPay.setEnabled(false);
             return;
         }
         for (OrderDetail d : controller.details(o.getId())) {
@@ -189,7 +192,29 @@ public class OrdersPanel extends javax.swing.JPanel {
         btnCancel.setEnabled(Order.CHO_XAC_NHAN.equals(o.getStatus()));
         btnReceived.setEnabled(Order.DANG_GIAO.equals(o.getStatus())
                 || Order.DA_GIAO.equals(o.getStatus()));
+        btnPay.setEnabled("VNPay".equals(o.getPaymentMethod())
+                && "Chưa thanh toán".equals(o.getPaymentStatus())
+                && !Order.DA_HUY.equals(o.getStatus())
+                && !Order.HOAN_THANH.equals(o.getStatus()));
     }
+    
+    /** Thanh toán (lại) đơn VNPay chưa trả tiền. */
+    private void payOrder() {
+        Order o = selectedOrder();
+        if (o == null) return;
+        try {
+            controller.payVnpay(o.getId(), o.getTotalPrice(), r -> javax.swing.SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this, r.message,
+                        r.success ? "Thanh toán thành công" : "Chưa thanh toán",
+                        r.success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
+                refresh(false);
+            }));
+            JOptionPane.showMessageDialog(this, "Trình duyệt đang mở trang thanh toán VNPay cho đơn #" + o.getId() + ".");
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Không thể thanh toán", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
  
     /** Thanh tiến trình:  bước đã qua / đang ở,  bước chưa tới. */
     private String trackHtml(Order o) {
@@ -260,6 +285,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         btnRefresh = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         btnReceived = new javax.swing.JButton();
+        btnPay = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -331,12 +357,16 @@ public class OrdersPanel extends javax.swing.JPanel {
         btnReceived.setText("Đã nhận hàng");
         pnlBottom.add(btnReceived);
 
+        btnPay.setText("Thanh toán VNPay");
+        pnlBottom.add(btnPay);
+
         add(pnlBottom, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnPay;
     private javax.swing.JButton btnReceived;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JLabel lblShip;

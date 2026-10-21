@@ -228,4 +228,30 @@ public class OrderDAO extends DAO {
             con.setAutoCommit(oldAuto);
         }
     }
+    public boolean markPaid(int orderId, double amount) {
+        if (con == null) return false;
+        String sql = "UPDATE Orders SET PaymentStatus = N'Đã thanh toán' "
+                   + "WHERE Id = ? AND PaymentMethod = 'VNPay' AND Status <> ? "
+                   + "AND PaymentStatus <> N'Đã thanh toán' AND ABS(TotalPrice - ?) < 1";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.setString(2, Order.DA_HUY);
+            ps.setDouble(3, amount);
+            if (ps.executeUpdate() > 0) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        // có thể trình duyệt tải lại trang kết quả: đơn đã được ghi nhận từ trước
+        String check = "SELECT 1 FROM Orders WHERE Id = ? AND PaymentMethod = 'VNPay' "
+                     + "AND PaymentStatus = N'Đã thanh toán' AND ABS(TotalPrice - ?) < 1";
+        try (PreparedStatement ps = con.prepareStatement(check)) {
+            ps.setInt(1, orderId);
+            ps.setDouble(2, amount);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

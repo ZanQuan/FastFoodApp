@@ -61,4 +61,9 @@ public class OrderController {
         User u = AppSession.getCurrentUser();
         return u != null && dao.confirmReceived(orderId, u.getId());
     }
+    
+    public void payVnpay(int orderId, double total, java.util.function.Consumer<util.PaymentService.Result> onDone) {
+        if (AppSession.getCurrentUser() == null) throw new IllegalStateException("Bạn cần đăng nhập.");
+        util.PaymentService.pay(orderId, total, onDone);
+    }
 }

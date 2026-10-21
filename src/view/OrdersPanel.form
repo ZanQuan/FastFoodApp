@@ -189,6 +189,11 @@
             <Property name="text" type="java.lang.String" value="&#x110;&#xe3; nh&#x1ead;n h&#xe0;ng"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JButton" name="btnPay">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Thanh to&#xe1;n VNPay"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

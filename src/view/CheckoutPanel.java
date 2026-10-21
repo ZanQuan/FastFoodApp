@@ -49,7 +49,7 @@ public class CheckoutPanel extends javax.swing.JPanel {
         group.add(rdoCod);
         group.add(rdoVnpay);
         rdoCod.setSelected(true);
-        rdoVnpay.setEnabled(false);
+        rdoVnpay.setText("VNPay (thẻ / QR)");
 
         applyStyle();
         btnBack.addActionListener(e -> shell.showCart());
@@ -110,12 +110,17 @@ public class CheckoutPanel extends javax.swing.JPanel {
 
     private void placeOrder() {
         String method = rdoVnpay.isSelected() ? "VNPay" : "COD";
+        double total = CartHelper.total();
         try {
             int id = controller.placeOrder(txtName.getText(), txtPhone.getText(),
                     txtAddress.getText(), txtNote.getText(), method,
                     new ArrayList<>(CartHelper.getItems()));
             CartHelper.clear();
             txtNote.setText("");
+            if ("VNPay".equals(method)) {
+                payWithVnpay(id, total);
+                return;
+            }
             JOptionPane.showMessageDialog(this,
                     "Đặt hàng thành công! Mã đơn của bạn: #" + id
                     + "\nBạn thanh toán khi nhận hàng (COD).");
@@ -125,6 +130,27 @@ public class CheckoutPanel extends javax.swing.JPanel {
                     "Không thể đặt hàng", JOptionPane.WARNING_MESSAGE);
         }
     }
+    /** Đơn đã tạo xong -> mở cổng VNPay; kết quả báo về qua callback. */
+    private void payWithVnpay(int id, double total) {
+        try {
+            controller.payVnpay(id, total, r -> javax.swing.SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this, r.message,
+                        r.success ? "Thanh toán thành công" : "Chưa thanh toán",
+                        r.success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
+                shell.showOrders();
+            }));
+            JOptionPane.showMessageDialog(this,
+                    "Đã tạo đơn #" + id + ". Trình duyệt đang mở trang thanh toán VNPay.\n"
+                    + "Thanh toán xong, ứng dụng sẽ tự báo kết quả.");
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Đã tạo đơn #" + id + " nhưng chưa mở được cổng thanh toán:\n" + ex.getMessage()
+                    + "\nBạn có thể vào mục \"Đơn hàng\" để thanh toán lại.",
+                    "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
+        shell.showOrders();
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
