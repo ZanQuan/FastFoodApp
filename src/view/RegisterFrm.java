@@ -22,6 +22,7 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
 
     public RegisterFrm() {
         initComponents();
+        applyStyle();
         setTitle("FastFood - Đăng ký");
         setLocationRelativeTo(null);
         getRootPane().setDefaultButton(btnRegister);
@@ -29,6 +30,64 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
         lblBackLogin.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
     }
 
+    private void applyStyle() {
+        setSize(860, 660);
+        setResizable(false);
+        getContentPane().setBackground(util.Theme.BG);
+
+        // bên trái: thương hiệu 
+        pnlBrand.setBackground(util.Theme.PRIMARY);
+        pnlBrand.setPreferredSize(new java.awt.Dimension(340, 0));
+        lblBrand.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblBrand.setForeground(java.awt.Color.WHITE);
+        lblBrand.setFont(util.Theme.font(java.awt.Font.PLAIN, 17f));
+        lblBrand.setText("<html><div style='text-align:center'>"
+                + "<span style='font-size:42px'><b>FastFood</b></span><br><br>"
+                + "Tạo tài khoản<br>Đặt món chỉ với vài cú nhấp</div></html>");
+
+        // bên phải: thẻ đăng ký 
+        pnlRight.setBackground(util.Theme.BG);
+        pnlForm.setBackground(util.Theme.CARD);
+        pnlForm.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createLineBorder(util.Theme.BORDER, 1),
+                util.Theme.pad(24, 32)));
+        pnlForm.setPreferredSize(new java.awt.Dimension(400, 580));
+        ((java.awt.GridLayout) pnlForm.getLayout()).setVgap(4);
+
+        lblTitle.setText("Đăng ký");
+        lblTitle.setFont(util.Theme.font(java.awt.Font.BOLD, 28f));
+        lblTitle.setForeground(util.Theme.TEXT);
+        lblSub.setText("Tạo tài khoản khách hàng mới");
+        lblSub.setFont(util.Theme.font(java.awt.Font.PLAIN, 14f));
+        lblSub.setForeground(util.Theme.MUTED);
+
+        jLabel2.setText("Họ và tên");
+        jLabel1.setText("Email");
+        jLabel3.setText("Mật khẩu (tối thiểu 6 ký tự)");
+        jLabel4.setText("Nhập lại mật khẩu");
+        for (javax.swing.JLabel l : new javax.swing.JLabel[]{lblTitle, lblSub, jLabel1, jLabel2, jLabel3, jLabel4}) {
+            l.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        }
+        util.Style.label(jLabel1);
+        util.Style.label(jLabel2);
+        util.Style.label(jLabel3);
+        util.Style.label(jLabel4);
+        util.Style.field(txtFullName);
+        util.Style.field(txtEmail);
+        util.Style.field(txtPassword);
+        util.Style.field(txtConfirmPwd);
+
+        btnRegister.setText("Đăng ký");
+        util.Style.primary(btnRegister);
+        btnRegister.setFont(util.Theme.font(java.awt.Font.BOLD, 16f));
+
+        lblBackLogin.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblBackLogin.setFont(util.Theme.font(java.awt.Font.PLAIN, 14f));
+        lblBackLogin.setForeground(util.Theme.MUTED);
+        lblBackLogin.setText("<html>Đã có tài khoản? <font color='#E8590C'><b>Đăng nhập</b></font></html>");
+
+        setLocationRelativeTo(null);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,28 +97,54 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        txtEmail = new javax.swing.JTextField();
+        pnlBrand = new javax.swing.JPanel();
+        lblBrand = new javax.swing.JLabel();
+        pnlRight = new javax.swing.JPanel();
+        pnlForm = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        lblSub = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtFullName = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtEmail = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        txtPassword = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
+        txtConfirmPwd = new javax.swing.JPasswordField();
         btnRegister = new javax.swing.JButton();
         lblBackLogin = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JPasswordField();
-        txtConfirmPwd = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Tên đăng nhập/Email:");
+        pnlBrand.setLayout(new java.awt.BorderLayout());
+        pnlBrand.add(lblBrand, java.awt.BorderLayout.CENTER);
 
-        jLabel2.setText("FullName:");
+        getContentPane().add(pnlBrand, java.awt.BorderLayout.WEST);
 
-        jLabel3.setText("Mật khẩu:");
+        pnlRight.setLayout(new java.awt.GridBagLayout());
 
-        jLabel4.setText("Xác nhận mật khẩu:");
+        pnlForm.setLayout(new java.awt.GridLayout(12, 1));
+        pnlForm.add(lblTitle);
+        pnlForm.add(lblSub);
+
+        jLabel2.setText("Họ và tên");
+        pnlForm.add(jLabel2);
+        pnlForm.add(txtFullName);
+
+        jLabel1.setText("Email");
+        pnlForm.add(jLabel1);
+        pnlForm.add(txtEmail);
+
+        jLabel3.setText("Mật khẩu");
+        pnlForm.add(jLabel3);
+        pnlForm.add(txtPassword);
+
+        jLabel4.setText("Nhập lại mật khẩu");
+        pnlForm.add(jLabel4);
+        pnlForm.add(txtConfirmPwd);
 
         btnRegister.setText("Đăng ký");
+        pnlForm.add(btnRegister);
 
         lblBackLogin.setText("Đã có tài khoản? Đăng nhập");
         lblBackLogin.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -67,65 +152,11 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
                 lblBackLoginMouseClicked(evt);
             }
         });
+        pnlForm.add(lblBackLogin);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE))
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(lblBackLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtEmail)
-                                .addComponent(txtFullName)
-                                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtConfirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(42, 42, 42))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtFullName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtConfirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBackLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(54, Short.MAX_VALUE))
-        );
+        pnlRight.add(pnlForm, new java.awt.GridBagConstraints());
+
+        getContentPane().add(pnlRight, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -146,6 +177,12 @@ public class RegisterFrm extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel lblBackLogin;
+    private javax.swing.JLabel lblBrand;
+    private javax.swing.JLabel lblSub;
+    private javax.swing.JLabel lblTitle;
+    private javax.swing.JPanel pnlBrand;
+    private javax.swing.JPanel pnlForm;
+    private javax.swing.JPanel pnlRight;
     private javax.swing.JPasswordField txtConfirmPwd;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFullName;
