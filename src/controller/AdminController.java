@@ -178,4 +178,34 @@ public class AdminController {
         String pw = sb.toString();
         return userDAO.resetPassword(userId, pw) ? pw : null;
     }
+    
+    public double[] statSummary(java.time.LocalDate from, java.time.LocalDate to) {
+        requireAdmin();
+        return statsDAO.rangeSummary(from, to);
+    }
+
+    public List<Object[]> statRevenueByDay(java.time.LocalDate from, java.time.LocalDate to) {
+        requireAdmin();
+        return statsDAO.revenueByDay(from, to);
+    }
+
+    public List<Object[]> statOrdersByStatus(java.time.LocalDate from, java.time.LocalDate to) {
+        requireAdmin();
+        return statsDAO.ordersByStatus(from, to);
+    }
+
+    public List<Object[]> statByPayment(java.time.LocalDate from, java.time.LocalDate to) {
+        requireAdmin();
+        return statsDAO.byPayment(from, to);
+    }
+
+    public List<Object[]> statByCategory(java.time.LocalDate from, java.time.LocalDate to) {
+        requireAdmin();
+        return statsDAO.revenueByCategory(from, to);
+    }
+
+    public List<Object[]> statTopProducts(java.time.LocalDate from, java.time.LocalDate to, int n) {
+        requireAdmin();
+        return statsDAO.topProductsRange(from, to, n);
+    }
 }

@@ -85,12 +85,17 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
                 <Property name="columns" type="int" value="1"/>
-                <Property name="rows" type="int" value="5"/>
+                <Property name="rows" type="int" value="6"/>
               </Layout>
               <SubComponents>
                 <Component class="javax.swing.JButton" name="btnDash">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="T&#x1ed5;ng quan"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnStats">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea;"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnOrders">

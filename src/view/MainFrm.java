@@ -15,7 +15,7 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
-    private static final String DASH = "dash", ORDERS = "orders", PRODUCTS = "products", CATEGORIES = "categories", USERS = "users";
+    private static final String DASH = "dash", ORDERS = "orders", PRODUCTS = "products", CATEGORIES = "categories", USERS = "users", STATS = "stats";
     private static final java.awt.Color SIDEBAR = new java.awt.Color(0x2B2420);
 
     private final model.User currentUser;
@@ -24,6 +24,7 @@ public class MainFrm extends javax.swing.JFrame {
     private ManageProductPanel products;       // chỉ Admin dùng, tạo khi cần
     private ManageCategoryPanel categories;
     private ManageUserPanel users;
+    private StatsPanel stats;
     private java.util.List<javax.swing.JButton> navButtons;
 
     public MainFrm(model.User user) {
@@ -44,12 +45,15 @@ public class MainFrm extends javax.swing.JFrame {
             pnlContent.add(categories, CATEGORIES);
             users = new ManageUserPanel();
             pnlContent.add(users, USERS);
+            stats = new StatsPanel();
+            pnlContent.add(stats, STATS);
         }
 
-        navButtons = java.util.Arrays.asList(btnDash, btnOrders, btnProducts, btnCategories, btnUsers);
+        navButtons = java.util.Arrays.asList(btnDash, btnOrders, btnProducts, btnCategories, btnUsers, btnStats);
         applyStyle(user);
 
         btnDash.addActionListener(e -> showDashboard());
+        btnStats.addActionListener(e -> showStats());
         btnOrders.addActionListener(e -> showOrders());
         btnProducts.addActionListener(e -> showProducts());
         btnCategories.addActionListener(e -> showCategories());
@@ -87,6 +91,8 @@ public class MainFrm extends javax.swing.JFrame {
         btnProducts.setVisible(admin);
         btnCategories.setVisible(admin);
         btnUsers.setVisible(admin);
+        btnStats.setVisible(admin);
+        pnlMenu.setLayout(new java.awt.GridLayout(0, 1));
     }
 
     private void styleNav(javax.swing.JButton b) {
@@ -137,6 +143,12 @@ public class MainFrm extends javax.swing.JFrame {
         ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, USERS);
         highlight(btnUsers);
     }
+    
+    private void showStats() {
+        stats.reload();
+        ((java.awt.CardLayout) pnlContent.getLayout()).show(pnlContent, STATS);
+        highlight(btnStats);
+    }
 
     private void comingSoon(String name) {
         javax.swing.JOptionPane.showMessageDialog(this, name + " sẽ làm ở bước tiếp theo.");
@@ -168,6 +180,7 @@ public class MainFrm extends javax.swing.JFrame {
         pnlMenuWrap = new javax.swing.JPanel();
         pnlMenu = new javax.swing.JPanel();
         btnDash = new javax.swing.JButton();
+        btnStats = new javax.swing.JButton();
         btnOrders = new javax.swing.JButton();
         btnProducts = new javax.swing.JButton();
         btnCategories = new javax.swing.JButton();
@@ -198,10 +211,13 @@ public class MainFrm extends javax.swing.JFrame {
 
         pnlMenuWrap.setLayout(new java.awt.BorderLayout());
 
-        pnlMenu.setLayout(new java.awt.GridLayout(5, 1));
+        pnlMenu.setLayout(new java.awt.GridLayout(6, 1));
 
         btnDash.setText("Tổng quan");
         pnlMenu.add(btnDash);
+
+        btnStats.setText("Thống kê");
+        pnlMenu.add(btnStats);
 
         btnOrders.setText("Đơn hàng");
         pnlMenu.add(btnOrders);
@@ -244,6 +260,7 @@ public class MainFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnOrders;
     private javax.swing.JButton btnProducts;
+    private javax.swing.JButton btnStats;
     private javax.swing.JButton btnUsers;
     private javax.swing.JLabel lblBrand;
     private javax.swing.JLabel lblRole;
